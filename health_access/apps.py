@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class BackendConfig(AppConfig):
+class HealthAccessConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'backend'
+    name = 'health_access'
