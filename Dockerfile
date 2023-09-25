@@ -1,21 +1,27 @@
-# Используем базовый образ Python
+# Use the Python base image
 FROM python:3.10.12
 
-# Устанавливаем переменную окружения для Python (необязательно, но рекомендуется)
+# Set an environment variable for Python (optional, but recommended)
 ENV PYTHONUNBUFFERED 1
 
-# Устанавливаем рабочую директорию внутри контейнера
+# Set an environment variable for Django
+ENV DJANGO_SETTINGS_MODULE=internship_backend.settings
+
+# Set the working directory inside the container
 WORKDIR /app
 
-# Копируем файлы с зависимостями и устанавливаем их
-COPY requirements.txt /app/
+# Copy all files from the current directory (where the Dockerfile is located) to /app inside the container
+COPY . /app/
+
+# Copy files with dependencies and install them
+#COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Копируем все остальные файлы проекта
-COPY internship_backend /app/
-
-# Открываем порт, на котором будет работать приложение
+# Open the port on which the application will run
 EXPOSE 8000
 
-# Запускаем сервер Django
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+# Command to run tests (pytest)
+CMD ["pytest"]
+
+# Start the Django server
+#CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
