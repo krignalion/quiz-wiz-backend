@@ -14,7 +14,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv()
 
 SECRET_KEY = os.getenv('SECRET_KEY')
-DEBUG = os.getenv('DEBUG') == 'True'  # Converting a string to bool
+DEBUG = os.getenv('DEBUG', '').lower() == 'true' # DEBUG will be True if the environment variable is set to 'True' or 'true'
 DATABASE_HOST = os.getenv('DATABASE_HOST')
 DATABASE_PORT = int(os.getenv('DATABASE_PORT', 5432))
 
