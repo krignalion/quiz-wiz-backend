@@ -15,7 +15,7 @@ load_dotenv()
 
 SECRET_KEY = os.environ.get('SECRET_KEY', 'sjango-insecure-lp)64v=@!%g249&(l2h#5$_*w*u$hb(q_&wvlr*x50tb2l2o)s')
 DEBUG = os.getenv('DEBUG', '').lower() == 'true' # DEBUG will be True if the environment variable is set to 'True' or 'true'
-#DATABASE_HOST = os.getenv('DATABASE_HOST')
+DB_HOST = os.getenv('DB_HOST')
 #DATABASE_PORT = int(os.getenv('DATABASE_PORT', 5432))
 
 ALLOWED_HOSTS = ['127.0.0.1']
@@ -74,7 +74,7 @@ DATABASES = {
         'NAME': os.getenv('DB_NAME', 'postgres'),
         'USER': os.getenv('DB_USER', 'postgres'),
         'PASSWORD': os.getenv('DB_PASSWORD', 'your_secret_password'),
-        'HOST': os.getenv('DB_HOST', 'postgres'),
+        'HOST': os.getenv('DB_HOST', 'localhost'),
         'PORT': os.getenv('DB_PORT', '5432'),
     }
 }
@@ -121,11 +121,13 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CACHES = {
-    'default': {
-        'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': 'redis://127.0.0.1:6379/1',  # Redis address and port
-        'OPTIONS': {
-            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://{}:{}/1".format(
+            os.getenv('REDIS_HOST'), os.getenv('REDIS_PORT')
+        ),
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
     }
 }

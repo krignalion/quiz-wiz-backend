@@ -1,7 +1,13 @@
 version: '3'
 
+networks:
+  my_network:
+    driver: bridge
+
 services:
   django_app:
+    networks:
+      - my_network
     build:
       context: .
       dockerfile: Dockerfile
@@ -16,14 +22,21 @@ services:
 
   postgres:
     image: postgres:latest
+    container_name: postgres-db
+    networks:
+      - my_network
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_HOST: ${DB_HOST}
     ports:
       - "${DB_PORT}:5432"
 
   redis:
+    container_name: redis
+    networks:
+      - my_network
     image: redis:latest
     ports:
       - "6379:6379"
