@@ -16,7 +16,7 @@ load_dotenv()
 SECRET_KEY = os.environ.get('SECRET_KEY', 'sjango-insecure-lp)64v=@!%g249&(l2h#5$_*w*u$hb(q_&wvlr*x50tb2l2o)s')
 DEBUG = os.getenv('DEBUG', '').lower() == 'true' # DEBUG will be True if the environment variable is set to 'True' or 'true'
 DB_HOST = os.getenv('DB_HOST')
-#DATABASE_PORT = int(os.getenv('DATABASE_PORT', 5432))
+
 
 ALLOWED_HOSTS = ['127.0.0.1']
 
