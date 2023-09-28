@@ -15,8 +15,8 @@ load_dotenv()
 
 SECRET_KEY = os.environ.get('SECRET_KEY', 'sjango-insecure-lp)64v=@!%g249&(l2h#5$_*w*u$hb(q_&wvlr*x50tb2l2o)s')
 DEBUG = os.getenv('DEBUG', '').lower() == 'true' # DEBUG will be True if the environment variable is set to 'True' or 'true'
-DATABASE_HOST = os.getenv('DATABASE_HOST')
-DATABASE_PORT = int(os.getenv('DATABASE_PORT', 5432))
+DB_HOST = os.getenv('DB_HOST')
+
 
 ALLOWED_HOSTS = ['127.0.0.1']
 
@@ -70,11 +70,14 @@ WSGI_APPLICATION = 'internship_backend.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DB_NAME', 'postgres'),
+        'USER': os.getenv('DB_USER', 'postgres'),
+        'PASSWORD': os.getenv('DB_PASSWORD', 'your_secret_password'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT', '5432'),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -116,3 +119,16 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://{}:{}/1".format(
+            os.getenv('REDIS_HOST'), os.getenv('REDIS_PORT')
+        ),
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
+
