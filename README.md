@@ -1,42 +1,46 @@
 # internship_backend
 
-Проект internship_backend представляет собой веб-приложение, использующее Docker и Django для управления и развертывания.
+The internship_backend project is a web application that utilizes Docker and Django for management and deployment.
 
-## Запуск проекта с помощью Docker Compose
+## Running the Project Using Docker Compose
 
-1. **Клонирование репозитория**:
+1. **Cloning the Repository**:
 
-   Сначала склонируйте репозиторий с помощью Git:
+   First, clone the repository using Git:
 
    ```bash
    git clone https://github.com/krignalion/meduzzen-backend.git
    cd ./meduzzen-backend
+   ```
    
-2. **Настройка окружения**:
-   
-    Переименуйте файл .env.sample в .env в корне проекта и заполните переменные окружения
+2. **Setting up the Environment**:
 
-4. **Запуск проекта**:
-    ```bash
-    docker-compose up --build
-Приложение будет доступно по адресу http://localhost:8000.
+   Rename the `.env.sample` file to `.env` in the project root and fill in the environment variables.
 
-4. **Остановка проекта**:
-    ```bash
-    docker-compose down
+4. **Running the Project**:
+   ```bash
+   docker-compose up --build
+   ```
+   The application will be accessible at http://localhost:8000.
+
+4. **Stopping the Project**:
+   ```bash
+   docker-compose down
+   ```
    
-## Применение и запуск миграций:
-1. **Создание миграций**:
-    ```bash
+## Applying and Running Migrations:
+
+1. **Creating Migrations**:
+   ```bash
    docker-compose run django_app python manage.py makemigrations
+   ```
    
-2. **Применение миграций**:
-    ```bash
+2. **Applying Migrations**:
+   ```bash
    docker-compose run django_app python manage.py migrate
-   
-Эта команда обновит базу данных в соответствии с текущими миграциями.
+   ```
+   This command will update the database according to the current migrations.
 
-Благодарности
+Acknowledgements
 
-Благодарим за внимание к нашему проекту!
- 
+Thank you for your attention to our project!

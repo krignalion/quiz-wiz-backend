@@ -48,7 +48,7 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "http://127.0.0.1:8080",  # Replace with your frontend address
+    os.environ.get("FRONTENT_HOST", "http://127.0.0.1:8080"),
 ]
 
 CORS_ALLOW_HEADERS = [

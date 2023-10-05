@@ -27,6 +27,9 @@ env/
 # Ignore test data
 data/
 
+# Ignore redis data folder
+redis-data/
+
 # Ignore other temporary or project-created files
 *.orig
 *.DS_Store
