@@ -35,3 +35,4 @@ data/
 *.lock
 .git/
 .idea/
+*.log
