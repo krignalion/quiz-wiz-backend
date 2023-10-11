@@ -8,7 +8,7 @@ from django.contrib.auth.models import Permission
 
 @pytest.mark.django_db
 def test_create_user_authenticated():
-    authorized_user = UserProfile.objects.create_user(
+    authorized_user = UserProfile.objects.create(
         username='test_user',
         password='test_user_password'
     )
@@ -19,7 +19,7 @@ def test_create_user_authenticated():
     api_client = APIClient()
     api_client.force_authenticate(user=authorized_user)
 
-    url = reverse('userprofile-create-user')
+    url = reverse('user-create')
     user_data = {
         'username': 'newuser',
         'password': 'newpassword',
