@@ -1,22 +1,46 @@
-1. Download code from github
-2. create an environment in the desired folder
-  python3 -m venv env
-3. activate
-  source env/bin/activate
-4. install dependencies 
-  pip install -r requirements.txt
-6. rename the ".env.sample" file to ".env" and specify your parameters
-7. Starting the Server: Start the Django web server.
-  python manage.py runserver
-8. Your application is now running and accessible at http://localhost:8000
+# internship_backend
 
-#Running with docker
+The internship_backend project is a web application that utilizes Docker and Django for management and deployment.
 
-1. git clone https://github.com/krignalion/meduzzen-backend.git
-2. cd ./meduzzen-backend 
-3. In the Dockerfile you need to select one of two lines (comment out the second)
-CMD ["pytest"] (tests will be run) or
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"] ( the server will be started)
-4. sudo docker build -t <name> .
-5. sudo docker run -p 8000:8000 <name>
+## Running the Project Using Docker Compose
 
+1. **Cloning the Repository**:
+
+   First, clone the repository using Git:
+
+   ```bash
+   git clone https://github.com/krignalion/meduzzen-backend.git
+   cd ./meduzzen-backend
+   ```
+   
+2. **Setting up the Environment**:
+
+   Rename the `.env.sample` file to `.env` in the project root and fill in the environment variables.
+
+4. **Running the Project**:
+   ```bash
+   docker-compose up --build
+   ```
+   The application will be accessible at http://localhost:8000.
+
+4. **Stopping the Project**:
+   ```bash
+   docker-compose down
+   ```
+   
+## Applying and Running Migrations:
+
+1. **Creating Migrations**:
+   ```bash
+   docker-compose run django_app python manage.py makemigrations
+   ```
+   
+2. **Applying Migrations**:
+   ```bash
+   docker-compose run django_app python manage.py migrate
+   ```
+   This command will update the database according to the current migrations.
+
+Acknowledgements
+
+Thank you for your attention to our project!
