@@ -1,9 +1,8 @@
 import logging
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, filters
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
-from .filters import UserProfileFilter
 from rest_framework.decorators import action
 from rest_framework.generics import CreateAPIView
 from users.models import UserProfile
@@ -13,32 +12,25 @@ logger = logging.getLogger(__name__)
 
 class UserProfilePagination(PageNumberPagination):
     page_size = 10
-    queryset = UserProfile.objects.all().order_by('id')
 
-class UserProfileViewSet(viewsets.ModelViewSet):
-    queryset = UserProfile.objects.all()
+class UserListViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = UserProfileSerializer
-    filter_backends = [DjangoFilterBackend]
-    filterset_class = UserProfileFilter
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
+    ordering_fields = ['created_at']
+    queryset = UserProfile.objects.all().order_by('-created_at')
     pagination_class = UserProfilePagination
 
-    def retrieve(self, request, *args, **kwargs):
-        try:
-            instance = self.get_object()
-            serializer = self.get_serializer(instance)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response(str(e), status=status.HTTP_404_NOT_FOUND)
+class UserViewSet(viewsets.ModelViewSet):
+    serializer_class = UserProfileSerializer
+    queryset = UserProfile.objects.all()
 
     def destroy(self, request, *args, **kwargs):
         try:
             instance = self.get_object()
             instance.delete()
-            # Logging an object deletion operation
             logger.info('Object deleted: {}'.format(instance))
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Exception as e:
-            # Logging an error
             logger.error('Error deleting object: {}'.format(str(e)))
             return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
 

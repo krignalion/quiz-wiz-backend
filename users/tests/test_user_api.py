@@ -8,7 +8,6 @@ from django.contrib.auth.models import Permission
 
 @pytest.mark.django_db
 def test_create_user_authenticated():
-    # Create an authorized user
     authorized_user = UserProfile.objects.create_user(
         username='test_user',
         password='test_user_password'
@@ -30,7 +29,6 @@ def test_create_user_authenticated():
         'created_at': '2023-10-10',
     }
 
-    # Send a POST request with user data
     response = api_client.post(url, json.dumps(user_data), content_type='application/json')
 
     assert response.status_code == status.HTTP_201_CREATED
