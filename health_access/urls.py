@@ -4,5 +4,4 @@ from . import views
 
 urlpatterns = [
     path('', views.health_check, name='health_check'),
-    # path('health-check-view/', HealthCheckView.as_view(), name='health-check'),
 ]
