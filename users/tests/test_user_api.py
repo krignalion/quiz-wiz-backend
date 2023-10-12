@@ -19,7 +19,7 @@ def test_create_user_authenticated():
     api_client = APIClient()
     api_client.force_authenticate(user=authorized_user)
 
-    url = reverse('user-create')
+    url = '/users/'
     user_data = {
         'username': 'newuser',
         'password': 'newpassword',
@@ -29,6 +29,6 @@ def test_create_user_authenticated():
         'created_at': '2023-10-10',
     }
 
-    response = api_client.post(url, json.dumps(user_data), content_type='application/json')
+    response = api_client.post(url, user_data, format='json')
 
     assert response.status_code == status.HTTP_201_CREATED
