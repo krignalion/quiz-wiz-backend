@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_filters',
     'common',
+    'djoser',
+    'authentication',
 ]
 
 MIDDLEWARE = [
@@ -212,11 +214,21 @@ LOGGING = {
 AUTH_USER_MODEL = 'users.UserProfile'
 
 REST_FRAMEWORK = {
-    # Use Django's standard `django.contrib.auth` permissions,
-    # or allow read-only access for unauthenticated users.
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
     ],
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
 }
 
+DJOSER = {
+    'LOGIN_FIELD': 'email',
+    'PASSWORD_RESET_CONFIRM_URL': 'password/reset/confirm/{uid}/{token}',
+    'SET_PASSWORD_RETYPE': True,
+    'PASSWORD_RESET_SHOW_EMAIL_NOT_FOUND': True,
+    'PASSWORD_RESET_CONFIRM_RETYPE': True,
+    'PASSWORD_HASHING_ALGORITHM': 'default',
+    'HIDE_USERS': False,
+    'SERIALIZERS': {
+        'create': 'path.to.custom.serializer.UserProfileSerializer',
+    }
+}
