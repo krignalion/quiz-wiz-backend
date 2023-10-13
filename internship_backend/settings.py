@@ -202,7 +202,7 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
-        'users.views': {
+        'users.signals': {
             'handlers': ['database_changes_file'],
             'level': 'DEBUG',
             'propagate': True,
