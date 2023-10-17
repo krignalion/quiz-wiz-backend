@@ -33,6 +33,10 @@ INSTALLED_APPS = [
 
     'health_access',
     'corsheaders',
+    'users',
+    'rest_framework',
+    'django_filters',
+    'common',
 ]
 
 MIDDLEWARE = [
@@ -183,6 +187,12 @@ LOGGING = {
             'filename': os.path.join(BASE_DIR, 'debug.log'),
             'formatter': 'verbose',
         },
+        'database_changes_file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'database_changes.log'),
+            'formatter': 'verbose',
+        },
     },
     'loggers': {
         'django': {
@@ -190,6 +200,23 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
+        'users.signals': {
+            'handlers': ['database_changes_file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
     },
+}
+
+
+AUTH_USER_MODEL = 'users.UserProfile'
+
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
+    ],
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
 }
 
