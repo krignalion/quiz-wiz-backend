@@ -63,7 +63,7 @@ jobs:
           ruff check . --fix
       - name: Run Migrations
         run: |
-          dockerize -wait tcp://postgres:5432 -timeout 1m
+          ping postgres
           python manage.py makemigrations
           python manage.py migrate
 
