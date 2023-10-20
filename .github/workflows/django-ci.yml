@@ -63,7 +63,6 @@ jobs:
           ruff check . --fix
       - name: Run Migrations
         run: |
-          ping postgres
           python manage.py makemigrations
           python manage.py migrate
 
