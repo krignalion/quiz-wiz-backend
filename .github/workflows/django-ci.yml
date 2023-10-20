@@ -1,0 +1,70 @@
+name: Django CI
+
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+      matrix:
+        python-version: [3.7, 3.8, 3.9, 3.10]
+
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_DB: ${{ secrets.DB_NAME }}
+          POSTGRES_USER: ${{ secrets.DB_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        ports:
+          - 5432:5432
+
+      redis:
+        image: redis:latest
+        ports:
+          - 6379:6379
+
+    env:
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      DEBUG: True
+      DJANGO_PORT: 8000
+      DB_HOST: postgres
+      DB_PORT: 5432
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      FRONTEND_HOST: http://127.0.0.1:8080
+      FACEBOOK_KEY: ${{ secrets.FACEBOOK_KEY }}
+      FACEBOOK_SECRET: ${{ secrets.FACEBOOK_SECRET }}
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Cache Dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Check Code Formatting with Black
+        run: |
+          black --check .
+      - name: Check Code Formatting with Ruff
+        run: |
+          ruff check .
+      - name: Run Migrations
+        run: |
+          python manage.py makemigrations
+          python manage.py migrate
+      - name: Run Tests
+        run: |
+          pytest
