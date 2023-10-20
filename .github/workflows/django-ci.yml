@@ -14,7 +14,6 @@ jobs:
     services:
       postgres:
         image: postgres:latest
-        container_name: postgres-db
         env:
           POSTGRES_DB: ${{ secrets.DB_NAME }}
           POSTGRES_USER: ${{ secrets.DB_USER }}
@@ -31,7 +30,7 @@ jobs:
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
       DEBUG: True
       DJANGO_PORT: 8000
-      DB_HOST: postgres_db
+      DB_HOST: postgres
       DB_PORT: 5432
       REDIS_HOST: redis
       REDIS_PORT: 6379
@@ -64,6 +63,7 @@ jobs:
           ruff check . --fix
       - name: Run Migrations
         run: |
+          dockerize -wait tcp://postgres:5432 -timeout 1m
           python manage.py makemigrations
           python manage.py migrate
 
