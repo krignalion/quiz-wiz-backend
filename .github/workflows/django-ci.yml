@@ -35,7 +35,7 @@ jobs:
       DB_NAME: ${{ secrets.DB_NAME }}
       DB_HOST: localhost
       DB_PORT: 5432
-      REDIS_HOST: redis
+      REDIS_HOST: localhost
       REDIS_PORT: 6379
       FRONTEND_HOST: http://127.0.0.1:8080
       FACEBOOK_KEY: ${{ secrets.FACEBOOK_KEY }}
