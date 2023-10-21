@@ -36,10 +36,6 @@ jobs:
       DB_HOST: localhost
       DB_PORT: 5432
       REDIS_HOST: localhost
-      REDIS_PORT: 6379
-      FRONTEND_HOST: http://127.0.0.1:8080
-      FACEBOOK_KEY: ${{ secrets.FACEBOOK_KEY }}
-      FACEBOOK_SECRET: ${{ secrets.FACEBOOK_SECRET }}
 
     steps:
       - uses: actions/checkout@v3
@@ -67,7 +63,6 @@ jobs:
       - name: Run Migrations
         run: |
           python manage.py makemigrations
-          python manage.py migrate
 
       - name: Run Tests
         run: |
