@@ -59,7 +59,7 @@ jobs:
           black --check .
       - name: Check Code Formatting with Ruff
         run: |
-          ruff check . --fix
+          ruff check .
       - name: Run Migrations
         run: |
           python manage.py makemigrations
