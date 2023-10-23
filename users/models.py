@@ -12,6 +12,7 @@ class UserProfile(AbstractUser, TimeStampedModel):
     image_path = models.CharField(
         max_length=255, null=True, blank=True, verbose_name="avatar image path"
     )
+    owned_companies = models.ManyToManyField("company.Company", related_name="owners")
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"

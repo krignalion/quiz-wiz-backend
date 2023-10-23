@@ -1,14 +1,11 @@
-import logging
-
 from django_filters.rest_framework import DjangoFilterBackend
 
 from rest_framework import viewsets
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import IsAuthenticated
 from users.models import UserProfile
 
 from .serializers import UserProfileSerializer
-
-logger = logging.getLogger(__name__)
 
 
 class UserProfilePagination(PageNumberPagination):
@@ -21,3 +18,4 @@ class UserListViewSet(viewsets.ModelViewSet):
     queryset = UserProfile.objects.all().order_by("-created_at")
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ["created_at"]
+    permission_classes = [IsAuthenticated]
