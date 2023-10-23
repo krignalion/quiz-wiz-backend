@@ -21,11 +21,6 @@ jobs:
         ports:
           - 5432:5432
 
-      redis:
-        image: redis:latest
-        ports:
-          - 6379:6379
-
     env:
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
       DEBUG: True
@@ -59,10 +54,10 @@ jobs:
           black --check .
       - name: Check Code Formatting with Ruff
         run: |
-          ruff check .
+          ruff check . --fix
       - name: Run Migrations
         run: |
-          python manage.py makemigrations
+          python manage.py migrate
 
       - name: Run Tests
         run: |
