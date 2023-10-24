@@ -17,6 +17,7 @@ def company_save(sender, instance, created, **kwargs):
     else:
         logger.info(f"Company updated: {instance}")
 
+
 @receiver(post_delete, sender=Company)
 def company_deleted(sender, instance, **kwargs):
     logger.info(f"Company deleted: {instance}")
