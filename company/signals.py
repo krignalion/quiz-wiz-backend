@@ -9,18 +9,13 @@ logger = logging.getLogger(__name__)
 
 
 @receiver(post_save, sender=Company)
-def company_created(sender, instance, created, **kwargs):
+def company_save(sender, instance, created, **kwargs):
     if created:
         instance.owner = instance.owner
         instance.save()
         logger.info(f"New company created: {instance}")
-
-
-@receiver(post_save, sender=Company)
-def company_updated(sender, instance, **kwargs):
-    if instance._state.adding:
+    else:
         logger.info(f"Company updated: {instance}")
-
 
 @receiver(post_delete, sender=Company)
 def company_deleted(sender, instance, **kwargs):

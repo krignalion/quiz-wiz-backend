@@ -7,8 +7,7 @@ class CompanyConfig(AppConfig):
     name = "company"
 
     def ready(self):
-        from .signals import company_created, company_deleted, company_updated
+        from .signals import company_save, company_deleted
 
-        post_save.connect(company_created, sender=self.get_model("Company"))
-        post_save.connect(company_updated, sender=self.get_model("Company"))
+        post_save.connect(company_save, sender=self.get_model("Company"))
         post_delete.connect(company_deleted, sender=self.get_model("Company"))
