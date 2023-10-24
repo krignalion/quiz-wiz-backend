@@ -1,3 +1,8 @@
+import logging
+
+from django.db.models.signals import post_delete, post_save
+from django.dispatch import receiver
+
 from rest_framework import viewsets
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
@@ -31,3 +36,21 @@ class CompanyViewSet(viewsets.ModelViewSet):
         queryset = queryset.filter(is_visible=True)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+
+
+logger = logging.getLogger(__name__)
+
+
+@receiver(post_save, sender=Company)
+def company_save(sender, instance, created, **kwargs):
+    if created:
+        instance.owner = instance.owner
+        instance.save()
+        logger.info(f"New company created: {instance}")
+    else:
+        logger.info(f"Company updated: {instance}")
+
+
+@receiver(post_delete, sender=Company)
+def company_deleted(sender, instance, **kwargs):
+    logger.info(f"Company deleted: {instance}")

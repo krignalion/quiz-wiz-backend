@@ -200,7 +200,7 @@ LOGGING = {
     "loggers": {
         "django": {
             "handlers": ["file"],
-            "level": "DEBUG",
+            "level": "INFO",
             "propagate": True,
         },
         "users.signals": {
@@ -232,6 +232,7 @@ REST_FRAMEWORK = {
 
 SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("JWT",),
+    "TOKEN_OBTAIN_SERIALIZER": "users.serializers.MyTokenObtainPairSerializer",
 }
 
 AUTHENTICATION_BACKENDS = [
