@@ -11,8 +11,6 @@ logger = logging.getLogger(__name__)
 @receiver(post_save, sender=Company)
 def company_save(sender, instance, created, **kwargs):
     if created:
-        instance.owner = instance.owner
-        instance.save()
         logger.info(f"New company created: {instance}")
     else:
         logger.info(f"Company updated: {instance}")
