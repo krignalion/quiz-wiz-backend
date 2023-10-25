@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "users",
     "common",
+    "company",
     "health_access",
     "corsheaders",
     "rest_framework",
@@ -199,10 +200,15 @@ LOGGING = {
     "loggers": {
         "django": {
             "handlers": ["file"],
-            "level": "DEBUG",
+            "level": "INFO",
             "propagate": True,
         },
         "users.signals": {
+            "handlers": ["database_changes_file"],
+            "level": "DEBUG",
+            "propagate": True,
+        },
+        "companies.signals": {
             "handlers": ["database_changes_file"],
             "level": "DEBUG",
             "propagate": True,
@@ -220,11 +226,13 @@ REST_FRAMEWORK = {
     "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
     ),
 }
 
 SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("JWT",),
+    "TOKEN_OBTAIN_SERIALIZER": "users.serializers.MyTokenObtainPairSerializer",
 }
 
 AUTHENTICATION_BACKENDS = [

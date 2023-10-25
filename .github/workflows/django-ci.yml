@@ -21,7 +21,6 @@ jobs:
         ports:
           - 5432:5432
 
-
     env:
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
       DEBUG: True
@@ -31,6 +30,7 @@ jobs:
       DB_NAME: ${{ secrets.DB_NAME }}
       DB_HOST: localhost
       DB_PORT: 5432
+      REDIS_HOST: localhost
 
     steps:
       - uses: actions/checkout@v3
@@ -54,7 +54,6 @@ jobs:
           black --check .
       - name: Check Code Formatting with Ruff
         run: |
-          ruff --version
           ruff check . --fix
       - name: Run Migrations
         run: |
