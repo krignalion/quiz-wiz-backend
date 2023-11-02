@@ -1,6 +1,7 @@
 from django.db import models
 
-from common.models import TimeStampedModel
+from common.models import Invitation, Request, TimeStampedModel
+from users.models import UserProfile
 
 
 class Company(TimeStampedModel):
@@ -13,6 +14,13 @@ class Company(TimeStampedModel):
         related_name="owned_company",
     )
     is_visible = models.BooleanField(default=True)
+    members = models.ManyToManyField(UserProfile, related_name="member_of", blank=True)
+    invitations = models.ManyToManyField(
+        Invitation, related_name="company_invitations", blank=True
+    )
+    requests = models.ManyToManyField(
+        Request, related_name="company_requests", blank=True
+    )
 
     class Meta:
         verbose_name_plural = "Companies"

@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -233,6 +234,7 @@ REST_FRAMEWORK = {
 SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("JWT",),
     "TOKEN_OBTAIN_SERIALIZER": "users.serializers.MyTokenObtainPairSerializer",
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
 }
 
 AUTHENTICATION_BACKENDS = [
