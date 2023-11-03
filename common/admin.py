@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Invitation, Request
+from .models import Invitation, UserRequest
 
 
 class InvitationAdmin(admin.ModelAdmin):
@@ -16,4 +16,4 @@ class RequestAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Invitation, InvitationAdmin)
-admin.site.register(Request, RequestAdmin)
+admin.site.register(UserRequest, RequestAdmin)

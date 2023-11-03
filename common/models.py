@@ -1,5 +1,4 @@
-from enum import Enum
-
+from aenum import StrEnum, auto
 from django.db import models
 from django.utils import timezone
 
@@ -12,20 +11,18 @@ class TimeStampedModel(models.Model):
         abstract = True
 
 
-class InvitationStatus(Enum):
-    PENDING = "Pending"
-    APPROVED = "Approved"
-    REJECTED = "Rejected"
-    REVOKED = "Revoked"
-    CANCELED = "Canceled"
+class InvitationStatus(StrEnum):
+    PENDING = auto()
+    APPROVED = auto()
+    REJECTED = auto()
+    REVOKED = auto()
 
 
-class RequestStatus(Enum):
-    PENDING = "Pending"
-    APPROVED = "Approved"
-    REJECTED = "Rejected"
-    CANCELED = "Canceled"
-    REVOKED = "Revoked"
+class RequestStatus(StrEnum):
+    PENDING = auto()
+    APPROVED = auto()
+    REJECTED = auto()
+    CANCELED = auto()
 
 
 class Invitation(TimeStampedModel):
@@ -40,18 +37,18 @@ class Invitation(TimeStampedModel):
     company = models.ForeignKey("company.Company", on_delete=models.CASCADE)
     status = models.CharField(
         max_length=30,
-        choices=[(status.name, status.value) for status in InvitationStatus],
-        default=InvitationStatus.PENDING.value,
+        choices=[(status, status) for status in InvitationStatus],
+        default=InvitationStatus.PENDING,
     )
 
 
-class Request(TimeStampedModel):
+class UserRequest(TimeStampedModel):
     user = models.ForeignKey(
         "users.UserProfile", on_delete=models.CASCADE, related_name="requests"
     )
     company = models.ForeignKey("company.Company", on_delete=models.CASCADE)
     status = models.CharField(
         max_length=30,
-        choices=[(status.name, status.value) for status in RequestStatus],
-        default=RequestStatus.PENDING.value,
+        choices=[(status, status) for status in RequestStatus],
+        default=RequestStatus.PENDING,
     )

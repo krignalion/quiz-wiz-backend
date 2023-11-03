@@ -38,7 +38,7 @@ class CompanyViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    @api_view(["GET", "POST"])
+    @api_view(["GET"])
     def send_invitation(request, company_id, user_id):
         company = get_object_or_404(Company, id=company_id)
         user = get_object_or_404(UserProfile, id=user_id)
@@ -53,24 +53,22 @@ class CompanyViewSet(viewsets.ModelViewSet):
 
         return Response({"message": "Invitation sent successfully"})
 
-    @api_view(["GET", "POST"])
+    @api_view(["GET"])
     def revoke_invitation(self, invitation_id):
         invitation = get_object_or_404(Invitation, id=invitation_id)
 
-        print("self.user:", self.user)
-        print("invitation.sender:", invitation.sender)
         if self.user == invitation.sender:
             invitation.status = InvitationStatus.REVOKED.value
             invitation.save()
             return Response({"message": "Invitation revoked successfully"})
         else:
             if self.user == invitation.receiver:
-                invitation.status = InvitationStatus.CANCELED.value
+                invitation.status = InvitationStatus.REJECTED.value
                 invitation.save()
                 return Response({"message": "Invitation canceled successfully"})
             return Response({"message": "Permission denied"})
 
-    @api_view(["GET", "POST"])
+    @api_view(["GET"])
     def remove_user_from_company(request, company_id, user_id):
         company = get_object_or_404(Company, id=company_id)
         user = get_object_or_404(UserProfile, id=user_id)

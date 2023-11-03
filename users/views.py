@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 
-from common.models import Invitation, InvitationStatus, Request, RequestStatus
+from common.models import Invitation, InvitationStatus, RequestStatus, UserRequest
 from company.models import Company
 from rest_framework import status, viewsets
 from rest_framework.decorators import action, api_view
@@ -26,17 +26,17 @@ class UserListViewSet(viewsets.ModelViewSet):
     filterset_fields = ["created_at"]
     permission_classes = [IsAuthenticated]
 
-    @api_view(["GET", "POST"])
+    @api_view(["GET"])
     def cancel_request(request, request_id):
-        request_obj = get_object_or_404(Request, id=request_id)
+        request_obj = get_object_or_404(UserRequest, id=request_id)
 
         if request.user == request_obj.company.owner:
-            request_obj.status = RequestStatus.REVOKED.value
+            request_obj.status = RequestStatus.REJECTED
             request_obj.save()
-            return Response({"message": "Request REVOKED successfully"})
+            return Response({"message": "Request rejected successfully"})
         else:
             if request.user == request_obj.user:
-                request_obj.status = RequestStatus.CANCELED.value
+                request_obj.status = RequestStatus.CANCELED
                 request_obj.save()
                 return Response(
                     {"message": "Request CANCELED successfully"},
@@ -47,7 +47,7 @@ class UserListViewSet(viewsets.ModelViewSet):
                     {"message": "Permission denied"}, status=status.HTTP_403_FORBIDDEN
                 )
 
-    @api_view(["GET", "POST"])
+    @api_view(["GET"])
     def accept_invitation(self, invitation_id):
         invitation = get_object_or_404(Invitation, id=invitation_id)
 
@@ -71,13 +71,13 @@ class UserListViewSet(viewsets.ModelViewSet):
                 {"detail": "Permission denied"}, status=status.HTTP_403_FORBIDDEN
             )
 
-    @api_view(["GET", "POST"])
+    @api_view(["GET"])
     def send_request(request, company_id):
         user = request.user
         try:
             company = Company.objects.get(id=company_id)
-            request_obj = Request(
-                user=user, company=company, status=RequestStatus.PENDING.value
+            request_obj = UserRequest(
+                user=user, company=company, status=RequestStatus.PENDING
             )
             request_obj.save()
             return Response(
@@ -88,22 +88,12 @@ class UserListViewSet(viewsets.ModelViewSet):
                 {"detail": "Company not found"}, status=status.HTTP_404_NOT_FOUND
             )
 
-    def cancel_invitation(request, invitation_id):
-        invitation = get_object_or_404(Invitation, id=invitation_id)
-
-        if request.user == invitation.sender:
-            invitation.status = InvitationStatus.CANCELED.value
-            invitation.save()
-            return Response({"message": "Invitation canceled successfully"})
-        else:
-            return Response({"message": "Permission denied"})
-
-    @api_view(["GET", "POST"])
+    @api_view(["GET"])
     def approve_request(self, request_id):
-        request = get_object_or_404(Request, id=request_id)
+        request = get_object_or_404(UserRequest, id=request_id)
         if self.user.id == request.company.owner.id:
             request.company.members.add(request.user)
-            request.status = "Approved"
+            request.status = RequestStatus.APPROVED
             request.save()
             return Response({"message": "Request approved"}, status=status.HTTP_200_OK)
         return Response(
@@ -115,7 +105,7 @@ class UserRequestsView(viewsets.ModelViewSet):
     serializer_class = RequestSerializer
 
     def get_queryset(self):
-        return Request.objects.filter(user=self.request.user)
+        return UserRequest.objects.filter(user=self.request.user)
 
     @action(detail=False, methods=["GET"], url_path="request-for-joining")
     def request_for_joining(self, request):
@@ -124,7 +114,7 @@ class UserRequestsView(viewsets.ModelViewSet):
             company = get_object_or_404(Company, id=company_id)
             user = self.request.user
             if company.owner == user:
-                queryset = Request.objects.filter(company=company)
+                queryset = UserRequest.objects.filter(company=company)
                 serializer = RequestSerializer(queryset, many=True)
                 return Response(serializer.data)
         return Response([])

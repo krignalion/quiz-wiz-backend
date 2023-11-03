@@ -1,6 +1,6 @@
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from common.models import Invitation, Request
+from common.models import Invitation, UserRequest
 from rest_framework import serializers
 
 from .models import UserProfile
@@ -50,7 +50,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 class RequestSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Request
+        model = UserRequest
         fields = "__all__"
 
 

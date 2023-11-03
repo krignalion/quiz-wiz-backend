@@ -1,6 +1,6 @@
 from django.db import models
 
-from common.models import Invitation, Request, TimeStampedModel
+from common.models import Invitation, TimeStampedModel, UserRequest
 from users.models import UserProfile
 
 
@@ -19,7 +19,7 @@ class Company(TimeStampedModel):
         Invitation, related_name="company_invitations", blank=True
     )
     requests = models.ManyToManyField(
-        Request, related_name="company_requests", blank=True
+        UserRequest, related_name="company_requests", blank=True
     )
 
     class Meta:
