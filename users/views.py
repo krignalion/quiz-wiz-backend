@@ -3,15 +3,15 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 from common.models import RequestStatus
 from company.models import Company
+from company.permissions import CanApproveRequest
 from rest_framework import status, viewsets
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from users.models import UserProfile, UserRequest
-from company.permissions import CanApproveRequest
 
-from .serializers import UserRequestSerializer, UserProfileSerializer
+from .serializers import UserProfileSerializer, UserRequestSerializer
 
 
 class UserProfilePagination(PageNumberPagination):

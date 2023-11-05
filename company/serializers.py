@@ -1,11 +1,12 @@
 from rest_framework import serializers
+from users.serializers import UserProfileSerializer
 
 from .models import Company, Invitation
-from users.serializers import UserProfileSerializer
 
 
 class CompanySerializer(serializers.ModelSerializer):
     members = UserProfileSerializer(many=True, read_only=True)
+
     class Meta:
         model = Company
         fields = ["name", "description", "is_visible", "members"]

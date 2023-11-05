@@ -1,12 +1,8 @@
 import pytest
 from django.urls import reverse
 
-from users.models import UserRequest
-from company.models import Invitation
-from rest_framework import status
-from common.models import RequestStatus, InvitationStatus
 from company.models import Company
-
+from rest_framework import status
 
 # @pytest.mark.django_db  # company 1.1
 # def test_owner_send_invitations(create_authenticated_users):

@@ -4,10 +4,9 @@ from rest_framework.routers import DefaultRouter
 from users.views import UserListViewSet
 
 from .views import (
-    CompanyMembersView,
     CompanyViewSet,
-    InvitationViewSet,
     InvitationListViewSet,
+    InvitationViewSet,
     InvitedUsersView,
 )
 

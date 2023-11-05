@@ -1,7 +1,7 @@
 from django.contrib import admin
 
-from users.models import UserRequest
 from company.models import Invitation
+from users.models import UserRequest
 
 
 class InvitationAdmin(admin.ModelAdmin):

@@ -1,4 +1,5 @@
 from enum import StrEnum, auto
+
 from django.db import models
 from django.utils import timezone
 

@@ -1,6 +1,6 @@
 from django.db import models
 
-from common.models import TimeStampedModel, InvitationStatus
+from common.models import InvitationStatus, TimeStampedModel
 from users.models import UserProfile, UserRequest
 
 

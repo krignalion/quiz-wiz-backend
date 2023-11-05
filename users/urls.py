@@ -6,7 +6,6 @@ from .views import (
     UserListViewSet,
     UserRequestsView,
 )
-from company.views import InvitedUsersView
 
 router = DefaultRouter()
 router.register(r"user-requests", UserRequestsView, basename="user-requests")

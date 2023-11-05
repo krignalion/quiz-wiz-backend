@@ -1,10 +1,10 @@
 import pytest
 from django.urls import reverse
 
-from users.models import UserRequest
+from common.models import InvitationStatus, RequestStatus
 from company.models import Company, Invitation
 from rest_framework import status
-from common.models import InvitationStatus, RequestStatus
+from users.models import UserRequest
 
 
 @pytest.mark.django_db  # 2.1

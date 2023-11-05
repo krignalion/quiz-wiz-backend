@@ -6,16 +6,14 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.decorators import action
 from users.models import UserProfile
-from users.serializers import UserProfileSerializer
 
 from .models import Company, Invitation
 from .permissions import (
-    IsCompanyOwnerOrReadOnly,
-    CanSendInvitation,
-    IsInvitationReceiver,
     CanRemoveUserFromCompany,
+    CanSendInvitation,
+    IsCompanyOwnerOrReadOnly,
+    IsInvitationReceiver,
 )
 from .serializers import CompanyListSerializer, CompanySerializer, InvitationSerializer
 

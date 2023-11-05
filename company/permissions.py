@@ -1,8 +1,9 @@
-from rest_framework import permissions
-from users.permissions import IsOwnerOrReceiver
-from users.models import UserRequest, UserProfile
-from company.models import Company
 from django.shortcuts import get_object_or_404
+
+from company.models import Company
+from rest_framework import permissions
+from users.models import UserProfile, UserRequest
+from users.permissions import IsOwnerOrReceiver
 
 
 class IsCompanyOwnerOrReadOnly(IsOwnerOrReceiver):
