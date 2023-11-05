@@ -1,16 +1,17 @@
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 
-from common.models import Invitation, InvitationStatus, RequestStatus, UserRequest
+from common.models import RequestStatus
 from company.models import Company
 from rest_framework import status, viewsets
-from rest_framework.decorators import action, api_view
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from users.models import UserProfile
+from users.models import UserProfile, UserRequest
+from company.permissions import CanApproveRequest
 
-from .serializers import InvitationSerializer, RequestSerializer, UserProfileSerializer
+from .serializers import UserRequestSerializer, UserProfileSerializer
 
 
 class UserProfilePagination(PageNumberPagination):
@@ -24,9 +25,8 @@ class UserListViewSet(viewsets.ModelViewSet):
 
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ["created_at"]
-    permission_classes = [IsAuthenticated]
 
-    @api_view(["GET"])
+    @api_view(["POST"])
     def cancel_request(request, request_id):
         request_obj = get_object_or_404(UserRequest, id=request_id)
 
@@ -47,31 +47,7 @@ class UserListViewSet(viewsets.ModelViewSet):
                     {"message": "Permission denied"}, status=status.HTTP_403_FORBIDDEN
                 )
 
-    @api_view(["GET"])
-    def accept_invitation(self, invitation_id):
-        invitation = get_object_or_404(Invitation, id=invitation_id)
-
-        if self.user == invitation.receiver:
-            if invitation.status == InvitationStatus.PENDING.value:
-                invitation.status = InvitationStatus.APPROVED.value
-                invitation.save()
-
-                invitation.company.members.add(self.user)
-                return Response(
-                    {"message": "Invitation accepted and user added to the company"},
-                    status=status.HTTP_200_OK,
-                )
-            else:
-                return Response(
-                    {"message": "Invitation is already approved or rejected"},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-        else:
-            return Response(
-                {"detail": "Permission denied"}, status=status.HTTP_403_FORBIDDEN
-            )
-
-    @api_view(["GET"])
+    @api_view(["POST"])
     def send_request(request, company_id):
         user = request.user
         try:
@@ -88,21 +64,18 @@ class UserListViewSet(viewsets.ModelViewSet):
                 {"detail": "Company not found"}, status=status.HTTP_404_NOT_FOUND
             )
 
-    @api_view(["GET"])
+    @api_view(["POST"])
+    @permission_classes([CanApproveRequest])
     def approve_request(self, request_id):
         request = get_object_or_404(UserRequest, id=request_id)
-        if self.user.id == request.company.owner.id:
-            request.company.members.add(request.user)
-            request.status = RequestStatus.APPROVED
-            request.save()
-            return Response({"message": "Request approved"}, status=status.HTTP_200_OK)
-        return Response(
-            {"detail": "Permission denied"}, status=status.HTTP_403_FORBIDDEN
-        )
+        request.company.members.add(request.user)
+        request.status = RequestStatus.APPROVED
+        request.save()
+        return Response({"message": "Request approved"}, status=status.HTTP_200_OK)
 
 
 class UserRequestsView(viewsets.ModelViewSet):
-    serializer_class = RequestSerializer
+    serializer_class = UserRequestSerializer
 
     def get_queryset(self):
         return UserRequest.objects.filter(user=self.request.user)
@@ -115,26 +88,12 @@ class UserRequestsView(viewsets.ModelViewSet):
             user = self.request.user
             if company.owner == user:
                 queryset = UserRequest.objects.filter(company=company)
-                serializer = RequestSerializer(queryset, many=True)
+                serializer = UserRequestSerializer(queryset, many=True)
                 return Response(serializer.data)
         return Response([])
 
 
-class InvitationListViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Invitation.objects.all()
-    serializer_class = InvitationSerializer
-
-
-class InvitedUsersView(viewsets.ModelViewSet):
-    serializer_class = InvitationSerializer
+class UserRequestViewSet(viewsets.ModelViewSet):
+    queryset = UserRequest.objects.all()
+    serializer_class = UserRequestSerializer
     permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        company_id = self.request.query_params.get("company_id")
-        if company_id:
-            company = get_object_or_404(Company, id=company_id)
-            user = self.request.user
-            if company.owner == user:
-                queryset = Invitation.objects.filter(company=company)
-                return queryset
-        return Invitation.objects.none()

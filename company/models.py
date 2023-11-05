@@ -1,7 +1,24 @@
 from django.db import models
 
-from common.models import Invitation, TimeStampedModel, UserRequest
-from users.models import UserProfile
+from common.models import TimeStampedModel, InvitationStatus
+from users.models import UserProfile, UserRequest
+
+
+class Invitation(TimeStampedModel):
+    sender = models.ForeignKey(
+        "users.UserProfile", on_delete=models.CASCADE, related_name="sent_invitations"
+    )
+    receiver = models.ForeignKey(
+        "users.UserProfile",
+        on_delete=models.CASCADE,
+        related_name="received_invitations",
+    )
+    company = models.ForeignKey("company.Company", on_delete=models.CASCADE)
+    status = models.CharField(
+        max_length=30,
+        choices=[(status, status) for status in InvitationStatus],
+        default=InvitationStatus.PENDING,
+    )
 
 
 class Company(TimeStampedModel):
@@ -14,12 +31,14 @@ class Company(TimeStampedModel):
         related_name="owned_company",
     )
     is_visible = models.BooleanField(default=True)
-    members = models.ManyToManyField(UserProfile, related_name="member_of", blank=True)
+    members = models.ManyToManyField(
+        UserProfile, related_name="company_memberships", blank=True
+    )
     invitations = models.ManyToManyField(
         Invitation, related_name="company_invitations", blank=True
     )
-    requests = models.ManyToManyField(
-        UserRequest, related_name="company_requests", blank=True
+    user_requests = models.ManyToManyField(
+        UserRequest, related_name="user_requests", blank=True
     )
 
     class Meta:
