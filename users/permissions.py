@@ -1,4 +1,7 @@
+from django.shortcuts import get_object_or_404
+
 from rest_framework import permissions
+from users.models import UserRequest
 
 
 class IsOwnerOrReceiver(permissions.BasePermission):
@@ -13,3 +16,10 @@ class IsOwnerOrReceiver(permissions.BasePermission):
 
 class IsRequestUser(IsOwnerOrReceiver):
     pass
+
+
+class IsUserRequestUser(permissions.BasePermission):
+    def has_permission(self, request, view):
+        request_id = view.kwargs.get("request_id")
+        request_obj = get_object_or_404(UserRequest, id=request_id)
+        return request_obj.user == request.user

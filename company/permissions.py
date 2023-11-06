@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 
-from company.models import Company
+from company.models import Company, Invitation
 from rest_framework import permissions
 from users.models import UserProfile, UserRequest
 from users.permissions import IsOwnerOrReceiver
@@ -19,7 +19,7 @@ class CanSendInvitation(permissions.BasePermission):
         return request.user == company.owner
 
 
-class CanApproveRequest(permissions.BasePermission):
+class IsCompanyOwner(permissions.BasePermission):
     def has_permission(self, request, view):
         request_id = view.kwargs.get("request_id")
         request_obj = get_object_or_404(UserRequest, id=request_id)
@@ -27,8 +27,17 @@ class CanApproveRequest(permissions.BasePermission):
 
 
 class IsInvitationReceiver(permissions.BasePermission):
-    def has_object_permission(self, request, view, obj):
-        return obj.receiver == request.user
+    def has_permission(self, request, view):
+        invitation_id = view.kwargs.get("invitation_id")
+        invitation = get_object_or_404(Invitation, id=invitation_id)
+        return invitation.receiver == request.user
+
+
+class IsInvitationSender(permissions.BasePermission):
+    def has_permission(self, request, view):
+        invitation_id = view.kwargs.get("invitation_id")
+        invitation = get_object_or_404(Invitation, id=invitation_id)
+        return invitation.sender == request.user
 
 
 class CanRemoveUserFromCompany(permissions.BasePermission):

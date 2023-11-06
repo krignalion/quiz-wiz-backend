@@ -1,10 +1,9 @@
 import pytest
 from django.urls import reverse
 
-from common.models import InvitationStatus, RequestStatus
-from company.models import Company, Invitation
+from company.models import Company, Invitation, InvitationStatus
 from rest_framework import status
-from users.models import UserRequest
+from users.models import RequestStatus, UserRequest
 
 
 @pytest.mark.django_db  # company 1.1
@@ -51,7 +50,7 @@ def test_owner_reject_request(create_authenticated_users):
 
     request = UserRequest.objects.create(user=user, company=company)
 
-    response = owner_client.post(reverse("cancel-request", args=[request.id]))
+    response = owner_client.post(reverse("reject-request", args=[request.id]))
 
     assert response.status_code == status.HTTP_200_OK
 

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import UserProfile
+from .models import UserProfile, UserRequest
 
 
 class UserProfileAdmin(admin.ModelAdmin):
@@ -22,4 +22,11 @@ class UserProfileAdmin(admin.ModelAdmin):
     list_per_page = 20
 
 
+class RequestAdmin(admin.ModelAdmin):
+    list_display = ("user", "company", "status")
+    search_fields = ("user_username", "company__name")
+    list_filter = ("status", "company")
+
+
 admin.site.register(UserProfile, UserProfileAdmin)
+admin.site.register(UserRequest, RequestAdmin)

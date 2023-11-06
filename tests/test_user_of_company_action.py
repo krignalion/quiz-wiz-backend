@@ -1,10 +1,9 @@
 import pytest
 from django.urls import reverse
 
-from common.models import InvitationStatus, RequestStatus
-from company.models import Company, Invitation
+from company.models import Company, Invitation, InvitationStatus
 from rest_framework import status
-from users.models import UserRequest
+from users.models import RequestStatus, UserRequest
 
 
 @pytest.mark.django_db  # 2.1
@@ -28,7 +27,7 @@ def test_user_canceled_invitation(create_authenticated_users):
 
     invitation = Invitation.objects.create(sender=owner, receiver=user, company=company)
 
-    response = user_client.post(reverse("revoke_invitation", args=[invitation.id]))
+    response = user_client.post(reverse("reject_invitation", args=[invitation.id]))
 
     assert response.status_code == 200
     invitation = Invitation.objects.get(id=invitation.id)

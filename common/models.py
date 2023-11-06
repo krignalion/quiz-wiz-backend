@@ -1,5 +1,3 @@
-from enum import StrEnum, auto
-
 from django.db import models
 from django.utils import timezone
 
@@ -10,17 +8,3 @@ class TimeStampedModel(models.Model):
 
     class Meta:
         abstract = True
-
-
-class InvitationStatus(StrEnum):
-    PENDING = auto()
-    APPROVED = auto()
-    REJECTED = auto()
-    REVOKED = auto()
-
-
-class RequestStatus(StrEnum):
-    PENDING = auto()
-    APPROVED = auto()
-    REJECTED = auto()
-    CANCELED = auto()

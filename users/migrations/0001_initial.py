@@ -8,6 +8,8 @@ from django.db import migrations, models
 import django.db.models.deletion
 import django.utils.timezone
 
+import users.models
+
 
 class Migration(migrations.Migration):
     initial = True
@@ -162,23 +164,23 @@ class Migration(migrations.Migration):
                     models.CharField(
                         choices=[
                             (
-                                common.models.RequestStatus["PENDING"],
-                                common.models.RequestStatus["PENDING"],
+                                users.models.RequestStatus["PENDING"],
+                                users.models.RequestStatus["PENDING"],
                             ),
                             (
-                                common.models.RequestStatus["APPROVED"],
-                                common.models.RequestStatus["APPROVED"],
+                                users.models.RequestStatus["APPROVED"],
+                                users.models.RequestStatus["APPROVED"],
                             ),
                             (
-                                common.models.RequestStatus["REJECTED"],
-                                common.models.RequestStatus["REJECTED"],
+                                users.models.RequestStatus["REJECTED"],
+                                users.models.RequestStatus["REJECTED"],
                             ),
                             (
-                                common.models.RequestStatus["CANCELED"],
-                                common.models.RequestStatus["CANCELED"],
+                                users.models.RequestStatus["CANCELED"],
+                                users.models.RequestStatus["CANCELED"],
                             ),
                         ],
-                        default=common.models.RequestStatus["PENDING"],
+                        default=users.models.RequestStatus["PENDING"],
                         max_length=30,
                     ),
                 ),

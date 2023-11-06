@@ -1,7 +1,9 @@
+from enum import StrEnum, auto
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-from common.models import RequestStatus, TimeStampedModel
+from common.models import TimeStampedModel
 
 
 class UserProfile(AbstractUser, TimeStampedModel):
@@ -16,6 +18,13 @@ class UserProfile(AbstractUser, TimeStampedModel):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
+
+
+class RequestStatus(StrEnum):
+    PENDING = auto()
+    APPROVED = auto()
+    REJECTED = auto()
+    CANCELED = auto()
 
 
 class UserRequest(TimeStampedModel):

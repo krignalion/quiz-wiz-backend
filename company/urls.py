@@ -5,14 +5,10 @@ from users.views import UserListViewSet
 
 from .views import (
     CompanyViewSet,
-    InvitationListViewSet,
     InvitationViewSet,
-    InvitedUsersView,
 )
 
 router = DefaultRouter()
-router.register(r"invitations", InvitationListViewSet)
-router.register(r"invited-users", InvitedUsersView, basename="invited-users")
 router.register(r"", CompanyViewSet)
 
 urlpatterns = [
@@ -31,6 +27,11 @@ urlpatterns = [
         "revoke-invitation/<int:invitation_id>/",
         InvitationViewSet.revoke_invitation,
         name="revoke_invitation",
+    ),
+    path(
+        "reject-invitation/<int:invitation_id>/",
+        InvitationViewSet.reject_invitation,
+        name="reject_invitation",
     ),
     path(
         "<int:company_id>/remove-user/<int:user_id>/",

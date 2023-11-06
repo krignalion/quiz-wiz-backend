@@ -1,7 +1,16 @@
+from enum import StrEnum, auto
+
 from django.db import models
 
-from common.models import InvitationStatus, TimeStampedModel
-from users.models import UserProfile, UserRequest
+from common.models import TimeStampedModel
+from users.models import UserProfile
+
+
+class InvitationStatus(StrEnum):
+    PENDING = auto()
+    APPROVED = auto()
+    REJECTED = auto()
+    REVOKED = auto()
 
 
 class Invitation(TimeStampedModel):
@@ -33,12 +42,6 @@ class Company(TimeStampedModel):
     is_visible = models.BooleanField(default=True)
     members = models.ManyToManyField(
         UserProfile, related_name="company_memberships", blank=True
-    )
-    invitations = models.ManyToManyField(
-        Invitation, related_name="company_invitations", blank=True
-    )
-    user_requests = models.ManyToManyField(
-        UserRequest, related_name="user_requests", blank=True
     )
 
     class Meta:

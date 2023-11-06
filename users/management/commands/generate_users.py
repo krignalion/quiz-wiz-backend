@@ -1,8 +1,8 @@
-from datetime import timedelta
 from random import randint
 
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
+from django.utils import timezone
 from faker import Faker
 
 User = get_user_model()
@@ -26,11 +26,10 @@ class Command(BaseCommand):
             first_name = fake.first_name()
             last_name = fake.last_name()
             password = fake.password()
-            created_at = fake.date_time_this_decade(
-                before_now=True, after_now=False, tzinfo=None
-            )
-            days_to_add = timedelta(days=randint(1, 30))
-            created_at += days_to_add
+
+            days_to_subtract = randint(1, 30)
+
+            created_at = timezone.now() - timezone.timedelta(days=days_to_subtract)
 
             user = User.objects.create_user(
                 username=username,

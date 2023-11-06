@@ -5,6 +5,8 @@ from django.db import migrations, models
 import django.db.models.deletion
 import django.utils.timezone
 
+import company.models
+
 
 class Migration(migrations.Migration):
     initial = True
@@ -53,23 +55,23 @@ class Migration(migrations.Migration):
                     models.CharField(
                         choices=[
                             (
-                                common.models.InvitationStatus["PENDING"],
-                                common.models.InvitationStatus["PENDING"],
+                                company.models.InvitationStatus["PENDING"],
+                                company.models.InvitationStatus["PENDING"],
                             ),
                             (
-                                common.models.InvitationStatus["APPROVED"],
-                                common.models.InvitationStatus["APPROVED"],
+                                company.models.InvitationStatus["APPROVED"],
+                                company.models.InvitationStatus["APPROVED"],
                             ),
                             (
-                                common.models.InvitationStatus["REJECTED"],
-                                common.models.InvitationStatus["REJECTED"],
+                                company.models.InvitationStatus["REJECTED"],
+                                company.models.InvitationStatus["REJECTED"],
                             ),
                             (
-                                common.models.InvitationStatus["REVOKED"],
-                                common.models.InvitationStatus["REVOKED"],
+                                company.models.InvitationStatus["REVOKED"],
+                                company.models.InvitationStatus["REVOKED"],
                             ),
                         ],
-                        default=common.models.InvitationStatus["PENDING"],
+                        default=company.models.InvitationStatus["PENDING"],
                         max_length=30,
                     ),
                 ),
