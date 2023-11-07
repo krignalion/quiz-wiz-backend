@@ -1,5 +1,5 @@
 # Use the Python base image
-FROM python:3.10.12
+FROM python:3.11
 
 # Set an environment variable for Python (optional, but recommended)
 ENV PYTHONUNBUFFERED 1

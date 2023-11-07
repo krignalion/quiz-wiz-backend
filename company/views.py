@@ -1,15 +1,32 @@
-from rest_framework import viewsets
+from django.shortcuts import get_object_or_404
+
+from rest_framework import status, viewsets
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from users.models import RequestStatus, UserProfile, UserRequest
 
-from .models import Company
-from .permissions import IsCompanyOwnerOrReadOnly
-from .serializers import CompanyListSerializer, CompanySerializer
+from .models import Company, Invitation, InvitationStatus
+from .permissions import (
+    CanRemoveUserFromCompany,
+    CanSendInvitation,
+    IsCompanyOwner,
+    IsCompanyOwnerOrReadOnly,
+    IsInvitationReceiver,
+    IsInvitationSender,
+)
+from .serializers import CompanyListSerializer, CompanySerializer, InvitationSerializer
 
 
 class CompanyPagination(PageNumberPagination):
     page_size = 10
+
+
+def _save_invitation(invitation, status):
+    invitation.status = status
+    invitation.save()
+    return Response({"message": f"Invitation {invitation.status} successfully"})
 
 
 class CompanyViewSet(viewsets.ModelViewSet):
@@ -31,3 +48,101 @@ class CompanyViewSet(viewsets.ModelViewSet):
         queryset = queryset.filter(is_visible=True)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+
+
+class InvitationViewSet(viewsets.ModelViewSet):
+    queryset = Invitation.objects.all()
+    serializer_class = InvitationSerializer
+
+    @api_view(["POST"])
+    @permission_classes([CanSendInvitation])
+    def send_invitation(request, company_id, user_id):
+        company = get_object_or_404(Company, id=company_id)
+        user = get_object_or_404(UserProfile, id=user_id)
+
+        if company.members.filter(id=user.id).exists():
+            return Response(
+                {"message": "User is already a member of the company"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        invitation = Invitation(sender=company.owner, receiver=user, company=company)
+        invitation.save()
+
+        return Response({"message": "Invitation sent successfully"})
+
+    @api_view(["POST"])
+    @permission_classes([IsInvitationSender])
+    def revoke_invitation(self, invitation_id):
+        invitation = get_object_or_404(Invitation, id=invitation_id)
+
+        return _save_invitation(invitation, InvitationStatus.REVOKED)
+
+    @api_view(["POST"])
+    @permission_classes([IsInvitationReceiver])
+    def reject_invitation(self, invitation_id):
+        invitation = get_object_or_404(Invitation, id=invitation_id)
+
+        return _save_invitation(invitation, InvitationStatus.REJECTED)
+
+    @api_view(["POST"])
+    @permission_classes([CanRemoveUserFromCompany])
+    def remove_user_from_company(request, company_id, user_id):
+        company = get_object_or_404(Company, id=company_id)
+        user = get_object_or_404(UserProfile, id=user_id)
+
+        company.members.remove(user)
+
+        return Response({"message": "User removed from the company"})
+
+    @api_view(["POST"])
+    @permission_classes([IsInvitationReceiver])
+    def accept_invitation(self, invitation_id):
+        invitation = get_object_or_404(Invitation, id=invitation_id)
+
+        if invitation.status == InvitationStatus.PENDING:
+            if self.user not in invitation.company.members.all():
+                invitation.status = InvitationStatus.APPROVED
+                invitation.company.members.add(self.user)
+                invitation.save()
+                return Response(
+                    {
+                        "message": "Invitation accepted and user added to the company",
+                        "invitation_status": InvitationStatus.APPROVED,
+                    },
+                    status=status.HTTP_200_OK,
+                )
+            else:
+                return Response(
+                    {"message": "User is already a member of the company"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+        else:
+            return Response(
+                {
+                    "message": "Invitation is already " + invitation.status,
+                    "invitation_status": invitation.status,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+    @api_view(["POST"])
+    @permission_classes([IsCompanyOwner])
+    def approve_request(self, request_id):
+        request = get_object_or_404(UserRequest, id=request_id)
+
+        if request.company.members.filter(id=request.user.id).exists():
+            return Response(
+                {"message": "User is already a member of the company"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        request.company.members.add(request.user)
+        request.status = RequestStatus.APPROVED
+        request.save()
+        return Response({"message": "Request approved"}, status=status.HTTP_200_OK)

@@ -1,3 +1,5 @@
+from enum import StrEnum, auto
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
@@ -16,3 +18,22 @@ class UserProfile(AbstractUser, TimeStampedModel):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
+
+
+class RequestStatus(StrEnum):
+    PENDING = auto()
+    APPROVED = auto()
+    REJECTED = auto()
+    CANCELED = auto()
+
+
+class UserRequest(TimeStampedModel):
+    user = models.ForeignKey(
+        "users.UserProfile", on_delete=models.CASCADE, related_name="user_requests"
+    )
+    company = models.ForeignKey("company.Company", on_delete=models.CASCADE)
+    status = models.CharField(
+        max_length=30,
+        choices=[(status, status) for status in RequestStatus],
+        default=RequestStatus.PENDING,
+    )

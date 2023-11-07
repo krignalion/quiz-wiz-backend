@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Company
+from .models import Company, Invitation
 
 
 class CompanyAdmin(admin.ModelAdmin):
@@ -10,4 +10,11 @@ class CompanyAdmin(admin.ModelAdmin):
     list_per_page = 20
 
 
+class InvitationAdmin(admin.ModelAdmin):
+    list_display = ("sender", "receiver", "company", "status")
+    search_fields = ("sender__username", "receiver__username", "company__name")
+    list_filter = ("status", "company")
+
+
 admin.site.register(Company, CompanyAdmin)
+admin.site.register(Invitation, InvitationAdmin)
