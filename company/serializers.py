@@ -1,7 +1,8 @@
 from rest_framework import serializers
+from users.models import UserProfile
 from users.serializers import UserProfileSerializer, UserRequestSerializer
 
-from .models import Company, Invitation
+from .models import Company, CompanyMember, Invitation
 
 
 class InvitationSerializer(serializers.ModelSerializer):
@@ -12,7 +13,7 @@ class InvitationSerializer(serializers.ModelSerializer):
 
 class CompanySerializer(serializers.ModelSerializer):
     members = UserProfileSerializer(many=True, read_only=True)
-    sent_invitations = serializers.SerializerMethodField()
+    invitations = serializers.SerializerMethodField()
     user_requests = serializers.SerializerMethodField()
 
     class Meta:
@@ -22,18 +23,18 @@ class CompanySerializer(serializers.ModelSerializer):
             "description",
             "is_visible",
             "members",
-            "sent_invitations",
+            "invitations",
             "user_requests",
         ]
 
-    def get_sent_invitations(self, obj):
+    def get_invitations(self, obj):
         from company.models import Invitation
 
-        sent_invitations = Invitation.objects.filter(sender=obj.owner, company=obj)
-        return InvitationSerializer(sent_invitations, many=True).data
+        invitations = Invitation.objects.filter(sender=obj.owner, company=obj)
+        return InvitationSerializer(invitations, many=True).data
 
     def get_user_requests(self, obj):
-        from company.models import UserRequest
+        from users.models import UserRequest
 
         user_requests = UserRequest.objects.filter(user=obj.owner, company=obj)
         return UserRequestSerializer(user_requests, many=True).data
@@ -43,3 +44,19 @@ class CompanyListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Company
         fields = ("id", "name", "description")
+
+
+class CompanyAdminSerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField()
+
+    class Meta:
+        model = CompanyMember
+        fields = ("user", "role")
+
+    def get_user(self, obj):
+        user = UserProfile.objects.get(id=obj.user.id)
+        return {
+            "username": obj.user.username,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+        }

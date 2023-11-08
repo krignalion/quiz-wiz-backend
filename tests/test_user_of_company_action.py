@@ -22,7 +22,7 @@ def test_user_accept_invitation(create_authenticated_users):
 
 
 @pytest.mark.django_db  # 2.2
-def test_user_canceled_invitation(create_authenticated_users):
+def test_user_reject_invitation(create_authenticated_users):
     owner, company, user, owner_client, user_client = create_authenticated_users
 
     invitation = Invitation.objects.create(sender=owner, receiver=user, company=company)
@@ -49,7 +49,7 @@ def test_send_request(create_authenticated_users):
 
 
 @pytest.mark.django_db  # 2.4
-def test_owner_reject_request(create_authenticated_users):
+def test_owner_cancel_request(create_authenticated_users):
     owner, company, user, owner_client, user_client = create_authenticated_users
 
     request = UserRequest.objects.create(user=user, company=company)
