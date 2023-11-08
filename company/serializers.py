@@ -2,7 +2,7 @@ from rest_framework import serializers
 from users.models import UserProfile
 from users.serializers import UserProfileSerializer, UserRequestSerializer
 
-from .models import Company, CompanyMember, Invitation
+from .models import Company, CompanyMember, Invitation, UserCompanyRole
 
 
 class InvitationSerializer(serializers.ModelSerializer):
@@ -15,6 +15,7 @@ class CompanySerializer(serializers.ModelSerializer):
     members = UserProfileSerializer(many=True, read_only=True)
     invitations = serializers.SerializerMethodField()
     user_requests = serializers.SerializerMethodField()
+    admins = serializers.SerializerMethodField()
 
     class Meta:
         model = Company
@@ -25,7 +26,14 @@ class CompanySerializer(serializers.ModelSerializer):
             "members",
             "invitations",
             "user_requests",
+            "admins",
         ]
+
+    def get_admins(self, obj):
+        admins = CompanyMember.objects.filter(
+            company=obj.id, role=UserCompanyRole.ADMIN
+        )
+        return CompanyMemberSerializer(admins, many=True).data
 
     def get_invitations(self, obj):
         from company.models import Invitation
@@ -46,16 +54,15 @@ class CompanyListSerializer(serializers.ModelSerializer):
         fields = ("id", "name", "description")
 
 
-class CompanyAdminSerializer(serializers.ModelSerializer):
-    user = serializers.SerializerMethodField()
-
+class CompanyMemberSerializer(serializers.ModelSerializer):
     class Meta:
         model = CompanyMember
-        fields = ("user", "role")
+        fields = "__all__"
 
     def get_user(self, obj):
         user = UserProfile.objects.get(id=obj.user.id)
         return {
+            "id": obj.user.id,
             "username": obj.user.username,
             "first_name": user.first_name,
             "last_name": user.last_name,

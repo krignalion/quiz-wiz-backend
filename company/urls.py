@@ -4,8 +4,7 @@ from rest_framework.routers import DefaultRouter
 from users.views import UserListViewSet
 
 from .views import (
-    AppointRoleView,
-    CompanyAdminListView,
+    CompanyMemberViewSet,
     CompanyViewSet,
     InvitationViewSet,
 )
@@ -46,11 +45,8 @@ urlpatterns = [
         name="approve-request",
     ),
     path(
-        "<int:company_id>/appoint-role/", AppointRoleView.as_view(), name="appoint-role"
-    ),
-    path(
-        "<int:company_id>/admins/",
-        CompanyAdminListView.as_view(),
-        name="company-admin-list",
+        "company-member/appoint-role/<int:company_id>/",
+        CompanyMemberViewSet.as_view({"post": "appoint_role"}),
+        name="company-member-appoint-role",
     ),
 ]

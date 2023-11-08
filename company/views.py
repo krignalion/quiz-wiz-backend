@@ -1,11 +1,10 @@
 from django.shortcuts import get_object_or_404
 
-from rest_framework import generics, status, viewsets
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework import status, viewsets
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.views import APIView
 from users.models import RequestStatus, UserProfile, UserRequest
 
 from .models import (
@@ -23,8 +22,8 @@ from .permissions import (
     IsInvitationSender,
 )
 from .serializers import (
-    CompanyAdminSerializer,
     CompanyListSerializer,
+    CompanyMemberSerializer,
     CompanySerializer,
     InvitationSerializer,
 )
@@ -159,8 +158,12 @@ class InvitationViewSet(viewsets.ModelViewSet):
         return Response({"message": "Request approved"}, status=status.HTTP_200_OK)
 
 
-class AppointRoleView(APIView):
-    def post(self, request, company_id):
+class CompanyMemberViewSet(viewsets.ModelViewSet):
+    queryset = CompanyMember.objects.all()
+    serializer_class = CompanyMemberSerializer
+
+    @action(detail=True, methods=["POST"])
+    def appoint_role(self, request, company_id=None):
         company = get_object_or_404(Company, id=company_id)
 
         if request.user != company.owner:
@@ -192,13 +195,3 @@ class AppointRoleView(APIView):
         user_role.save()
 
         return Response("Role appointment completed.", status=status.HTTP_200_OK)
-
-
-class CompanyAdminListView(generics.ListAPIView):
-    serializer_class = CompanyAdminSerializer
-
-    def get_queryset(self):
-        company_id = self.kwargs.get("company_id")
-        return CompanyMember.objects.filter(
-            company_id=company_id, role=UserCompanyRole.ADMIN
-        )

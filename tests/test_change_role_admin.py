@@ -11,7 +11,7 @@ def test_appoint_role_admin(create_authenticated_users):
     company.members.add(user)
 
     response = owner_client.post(
-        reverse("appoint-role", args=[company.id]),
+        reverse("company-member-appoint-role", args=[company.id]),
         data={"user_id": user.id, "status_role": UserCompanyRole.ADMIN},
     )
 
@@ -31,7 +31,7 @@ def test_remove_role_admin(create_authenticated_users):
     )
 
     response = owner_client.post(
-        reverse("appoint-role", args=[company.id]),
+        reverse("company-member-appoint-role", args=[company.id]),
         data={"user_id": user.id, "status_role": UserCompanyRole.USER},
     )
 
