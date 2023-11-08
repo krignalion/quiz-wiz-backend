@@ -13,6 +13,11 @@ class InvitationStatus(StrEnum):
     REVOKED = auto()
 
 
+class UserCompanyRole(StrEnum):
+    ADMIN = auto()
+    USER = auto()
+
+
 class Invitation(TimeStampedModel):
     sender = models.ForeignKey(
         "users.UserProfile", on_delete=models.CASCADE, related_name="sent_invitations"
@@ -49,3 +54,15 @@ class Company(TimeStampedModel):
 
     def __str__(self):
         return self.name
+
+
+class CompanyMember(TimeStampedModel):
+    user = models.ForeignKey(
+        UserProfile, on_delete=models.CASCADE, related_name="company_membership_members"
+    )
+    company = models.ForeignKey(
+        "Company", related_name="company_memberships", on_delete=models.CASCADE
+    )
+    role = models.CharField(
+        max_length=100, choices=[(role, role) for role in UserCompanyRole]
+    )

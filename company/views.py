@@ -1,22 +1,32 @@
 from django.shortcuts import get_object_or_404
 
 from rest_framework import status, viewsets
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from users.models import RequestStatus, UserProfile, UserRequest
 
-from .models import Company, Invitation, InvitationStatus
+from .models import (
+    Company,
+    CompanyMember,
+    Invitation,
+    InvitationStatus,
+    UserCompanyRole,
+)
 from .permissions import (
     CanRemoveUserFromCompany,
     CanSendInvitation,
     IsCompanyOwner,
-    IsCompanyOwnerOrReadOnly,
     IsInvitationReceiver,
     IsInvitationSender,
 )
-from .serializers import CompanyListSerializer, CompanySerializer, InvitationSerializer
+from .serializers import (
+    CompanyListSerializer,
+    CompanyMemberSerializer,
+    CompanySerializer,
+    InvitationSerializer,
+)
 
 
 class CompanyPagination(PageNumberPagination):
@@ -33,7 +43,7 @@ class CompanyViewSet(viewsets.ModelViewSet):
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
     pagination_class = CompanyPagination
-    permission_classes = [IsAuthenticated, IsCompanyOwnerOrReadOnly]
+    permission_classes = [IsAuthenticated]
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -146,3 +156,42 @@ class InvitationViewSet(viewsets.ModelViewSet):
         request.status = RequestStatus.APPROVED
         request.save()
         return Response({"message": "Request approved"}, status=status.HTTP_200_OK)
+
+
+class CompanyMemberViewSet(viewsets.ModelViewSet):
+    queryset = CompanyMember.objects.all()
+    serializer_class = CompanyMemberSerializer
+
+    @action(detail=True, methods=["POST"])
+    def appoint_role(self, request, company_id=None):
+        company = get_object_or_404(Company, id=company_id)
+
+        if request.user != company.owner:
+            return Response(
+                "You do not have permission to appoint roles.",
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        user_id = request.data.get("user_id")
+        status_role = request.data.get("status_role")
+
+        if status_role not in [choice.value for choice in UserCompanyRole]:
+            return Response(
+                "Invalid status_role value.", status=status.HTTP_400_BAD_REQUEST
+            )
+
+        user = company.members.filter(id=user_id).first()
+
+        if not user:
+            return Response(
+                f"User with id {user_id} is not a member of this company.",
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        user_role, created = CompanyMember.objects.get_or_create(
+            user=user, company=company
+        )
+        user_role.role = status_role
+        user_role.save()
+
+        return Response("Role appointment completed.", status=status.HTTP_200_OK)
