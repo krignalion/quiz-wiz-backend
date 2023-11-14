@@ -36,12 +36,14 @@ INSTALLED_APPS = [
     "users",
     "common",
     "company",
+    "quizzes",
     "health_access",
     "corsheaders",
     "rest_framework",
     "django_filters",
     "djoser",
     "rest_framework_simplejwt",
+    "nested_admin",
 ]
 
 MIDDLEWARE = [

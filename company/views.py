@@ -61,6 +61,10 @@ class CompanyViewSet(viewsets.ModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
+
+        if not instance.is_visible and not request.user == instance.owner:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
