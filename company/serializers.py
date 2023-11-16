@@ -20,6 +20,7 @@ class CompanySerializer(serializers.ModelSerializer):
     class Meta:
         model = Company
         fields = [
+            "id",
             "name",
             "description",
             "is_visible",
@@ -27,6 +28,7 @@ class CompanySerializer(serializers.ModelSerializer):
             "invitations",
             "user_requests",
             "admins",
+            "owner",
         ]
 
     def get_admins(self, obj):
