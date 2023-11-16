@@ -1,7 +1,7 @@
 from django.contrib import admin
 from nested_admin import NestedModelAdmin, NestedTabularInline
 
-from .models import AnswerOption, Quiz, QuizQuestion, QuizResult
+from .models import Answer, AnswerOption, Quiz, QuizQuestion, QuizResult
 
 
 class AnswerOptionInline(NestedTabularInline):
@@ -9,9 +9,14 @@ class AnswerOptionInline(NestedTabularInline):
     extra = 0
 
 
+class AnswerInline(NestedTabularInline):
+    model = Answer
+    extra = 0
+
+
 class QuizQuestionInline(NestedTabularInline):
     model = QuizQuestion
-    inlines = [AnswerOptionInline]
+    inlines = [AnswerInline, AnswerOptionInline]
     extra = 0
 
 

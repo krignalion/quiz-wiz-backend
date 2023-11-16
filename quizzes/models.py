@@ -30,7 +30,6 @@ class Quiz(models.Model):
 class QuizQuestion(models.Model):
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
     text = models.TextField()
-    correct_answer = ArrayField(models.CharField(max_length=255), default=list)
     is_multiple_answers = models.BooleanField(default=False)
 
     def __str__(self):
@@ -53,6 +52,16 @@ class QuizQuestion(models.Model):
             )
 
         super().clean()
+
+
+class Answer(models.Model):
+    question = models.ForeignKey(
+        QuizQuestion, on_delete=models.CASCADE, related_name="correct_answer"
+    )
+    text = models.TextField()
+
+    def __str__(self):
+        return f"{self.question.text} - {self.text}"
 
 
 class AnswerOption(models.Model):
