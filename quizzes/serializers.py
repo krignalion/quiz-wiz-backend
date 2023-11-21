@@ -91,7 +91,9 @@ class QuizCreateSerializer(serializers.ModelSerializer):
         quiz_questions_data = data.get("quiz_questions", [])
 
         if len(quiz_questions_data) < 2:
-            raise serializers.ValidationError(["The quiz must contain a minimum of 2 questions."])
+            raise serializers.ValidationError(
+                ["The quiz must contain a minimum of 2 questions."]
+            )
 
         for question_data in quiz_questions_data:
             options_data = question_data.get("answer_options", [])
@@ -99,18 +101,28 @@ class QuizCreateSerializer(serializers.ModelSerializer):
             correct_answer_data = question_data.get("correct_answer", [])
 
             if len(options_data) < 2:
-                raise serializers.ValidationError(["Each question must have a minimum of 2 answer choices."])
+                raise serializers.ValidationError(
+                    ["Each question must have a minimum of 2 answer choices."]
+                )
 
             if not correct_answer_data:
-                raise serializers.ValidationError(["Each question must have at least one correct answer."])
+                raise serializers.ValidationError(
+                    ["Each question must have at least one correct answer."]
+                )
 
             if is_multiple_answers and len(correct_answer_data) < 2:
                 raise serializers.ValidationError(
-                    ["If is_multiple_answers is True, there must be at least 2 correct answers."])
+                    [
+                        "If is_multiple_answers is True, there must be at least 2 correct answers."
+                    ]
+                )
 
             if len(options_data) < len(correct_answer_data):
                 raise serializers.ValidationError(
-                    ["The number of answer options must be greater than or equal to the correct answers."])
+                    [
+                        "The number of answer options must be greater than or equal to the correct answers."
+                    ]
+                )
 
         return data
 
