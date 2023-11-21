@@ -1,0 +1,43 @@
+version: '3'
+
+networks:
+  my_network:
+    driver: bridge
+
+services:
+  django_app:
+    networks:
+      - my_network
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./:/app
+    ports:
+      - "${DJANGO_PORT}:8000"
+    depends_on:
+      - postgres
+      - redis
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres-db
+    networks:
+      - my_network
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "${DB_PORT}:5432"
+
+  redis:
+    container_name: redis
+    networks:
+      - my_network
+    image: redis:latest
+    volumes:
+      - ./redis-data:/data
+    ports:
+      - "6379:6379"

@@ -1,0 +1,11 @@
+env
+*.pyc
+__pycache__
+.idea
+.env
+db.sqlite3
+*.log
+debug.log
+# Ignore redis data folder
+redis-data/
+tests/test_test.py
