@@ -9,8 +9,8 @@ The internship_backend project is a web application that utilizes Docker and Dja
    First, clone the repository using Git:
 
    ```bash
-   git clone https://github.com/krignalion/meduzzen-backend.git
-   cd ./meduzzen-backend
+   git clone https://github.com/krignalion/quiz-wiz-backend.git
+   cd ./quiz-wiz-backend
    ```
    
 2. **Setting up the Environment**:
